@@ -14,15 +14,24 @@ const apiUrl = "https://api.collectapi.com/weather/getWeather?data.lang=tr";
 
 const useGetWeather = (city) => {
   const [weather, setWeather] = useState({});
+  const [isloading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!city) return;
-    axios.get(`${apiUrl}&data.city=${city}`, apiConfig).then((data) => {
-      setWeather(data.data.result[0]);
-    });
+    setIsLoading(true);
+    axios
+      .get(`${apiUrl}&data.city=${city}`, apiConfig)
+      .then((data) => {
+        setWeather(data.data.result[0]);
+      })
+      .catch(() => setError(true))
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [city]);
 
-  return { weather };
+  return { weather, isloading, error };
 };
 
 export default useGetWeather;
